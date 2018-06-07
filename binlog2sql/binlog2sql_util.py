@@ -85,7 +85,7 @@ def parse_args():
                         help='tables you want to process', default='')
 
     event = parser.add_argument_group('type filter')
-    event.add_argument('--only-dml', dest='only_dml', action='store_true', default=True,
+    event.add_argument('--only-dml', dest='only_dml', action='store_true', default=False,
                        help='only print dml, ignore ddl')
     event.add_argument('--sql-type', dest='sql_type', type=str, nargs='*', default=['INSERT', 'UPDATE', 'DELETE'],
                        help='Sql type you want to process, support INSERT, UPDATE, DELETE.')
@@ -130,6 +130,8 @@ def compare_items(items):
 
 def fix_object(value):
     """Fixes python objects so that they can be properly inserted into SQL queries"""
+    if isinstance(value, set):
+        value = ','.join(value)
     if PY3PLUS and isinstance(value, bytes):
         return value.decode('utf-8')
     elif not PY3PLUS and isinstance(value, unicode):
